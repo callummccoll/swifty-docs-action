@@ -86,6 +86,10 @@ async function main() {
     const moduleVersion = core.getInput('module-version');
     const outputFolder = core.getInput('output');
     const cleanBuild = core.getBooleanInput('clean', { required: true }) ;
+    const ignoreTargetsStr = core.getInput('ignore-targets');
+    const ignoredTargets = ignoreTargetsStr ? Set(ignoreTargetsStr.split(/, */g)) : Set();
+    core.debug(`Ignored Targets: ${ignoreTargets}`);
+    console.log(`Ignored Targets: ${ignoreTargets}`);
     let xcodebuildDestination: string | null;
     if (process.platform === 'darwin') {
         xcodebuildDestination = core.getInput('xcodebuild-destination');
@@ -104,7 +108,7 @@ async function main() {
 
     const moduleDocs = await core.group('Generating JSON docs', async () => {
         let docs: string[] = [];
-        const uniqueTargets = new Set(packageJSON.products.flatMap(p => p.targets));
+        const uniqueTargets = new Set(packageJSON.products.flatMap(p => p.targets)).filter(x => !ignoredTargets.has(x));
         for (const targetName of uniqueTargets) {
             // We need to synchronously generate docs or SPM will shoot itself.
             let targetArgs = ['doc', '--module-name', targetName];
