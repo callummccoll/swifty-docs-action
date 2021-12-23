@@ -19,6 +19,9 @@ inputs:
   xcodebuild-destination:
     description: Tells the action to use xcodebuild (instead of `swift build`) and passes the value as `-destination` to `xcodebuild`.
     required: false
+  ignore-targets:
+    description: Tells the action to ignore some targets from being documented. Pass a comma delimited string of targets to ignore.
+    required: false
 runs:
   using: node12
   main: dist/index.js
